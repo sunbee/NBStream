@@ -1,0 +1,3 @@
+Streamlit
+httpx
+python-dotenv

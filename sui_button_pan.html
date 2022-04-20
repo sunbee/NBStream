@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My Semantic UI Button</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <script>
+        class Observable {
+            constructor(value) {
+                this._value = value;
+                this._listeners = [];   
+            }
+            
+            subscribe(listener) {
+                this._listeners.push(listener);
+            }
+            
+            notify() {
+                this._listeners.forEach(listener => listener(this._value));
+            }
+            
+            get value() {
+                return this._value;
+            }
+            
+            set value(val) {
+                if (this._value != val) {
+                    this._value = val;
+                    this.notify();
+                }
+            }
+        } 
+
+        class Computed extends Observable {
+            constructor (computer, dependents) {
+                super(computer("Rock"));  // Initialize computed value 
+                                    // by call to constructor of Observable class
+                const listener = (_) => {
+                /*
+                Bridges between subscribers of a Computed instance 
+                and the Observables in its list. The Computed instance must 
+                operate as both listener and notifier to serve as go-between.
+                The dual role is achieved through this function, which becomes 
+                subscriber to each of the listed Observables. 
+                When any Observable changes state, this function recomputes 
+                state and notifies subscribers.  
+                */
+                console.log('Listener in Computed got ' + _);
+                this._value = computer(_);
+                console.log('Computer in Computed got ' + this._value);
+                this.notify();  // Notify listeners of 'this' instance 
+                                // of Computed class
+                
+                }
+                dependents.forEach(dependent => dependent.subscribe(listener));    
+            }
+            
+            get value() {
+                return this._value;
+            }
+        
+            set value(_) {
+                /*
+                Raise an exception, the value is computed from dependents, 
+                not set.
+                */
+                throw "Set no computed property.";
+            } 
+        }
+
+        const bind2DOM = (input, observed) => {
+            /*
+            Bind a DOM element of type input to data,
+            with data wrapped in an instance of Observable class,
+            so that any change to data updates the DOM and
+            any change to the DOM updates the data (i.e. Observable instance).
+            */
+            observed.subscribe(() => input.value = observed.value);
+            switch (input.nodeName) {
+                case 'INPUT':
+                input.onkeyup = () => {
+                    observed.value = input.value; 
+                    console.log(input.nodeName + " | " + observed.value); 
+                }
+                break;
+                case 'SELECT':
+                input.onchange = () => {
+                    observed.value = input.value; 
+                    console.log(input.nodeName + " | " + observed.value);
+                }
+                break;
+                default:
+                console.log(input.nodeName + " | " + observed.value);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const input_data = new Observable("Oh-tah!");
+
+            // Define number of panels e.g. 2
+            panels = [0, 1]
+            // Get selectors by class-name
+            selectors = document.getElementsByClassName("input");
+            // Define array with an Observable for each selector
+            entries = [];
+            panels.forEach(panel => entries.push(new Observable(panel)));
+            // Get display by class-name
+            displays = document.getElementsByClassName("output");
+            // Define array with a Computed for each display chaining with an Obs
+            results = [];
+            var funFactory = (entry) => {
+                var out = () => { 
+                    const RPS_menu = ["Rock", "Paper", "Scissors"];
+                    var expected = RPS_menu[Math.floor(Math.random()*3)];
+                    var observed = entry.value; 
+                    var success = true;
+
+                    console.log("Computer got expected as " + expected);
+                    console.log("Computer got observed as " + observed);
+                    if (expected === observed) {
+                        return `${expected}! Tie.`;
+                    } else if (expected === "Rock" && observed !== "Paper") {
+                        success = false;
+                    } else if (expected === "Paper" && observed !== "Scissors") {
+                        success = false;
+                    } else if (expected === "Scissors" && observed !== "Rock") {
+                        success = false;
+                    }
+                    return success ? `${expected}! You win.` : `${expected}! I win.`}
+                return out
+            } 
+            panels.forEach(panel => { 
+                results.push(new Computed(funFactory(entries[panel]), [entries[panel]]));
+            })
+            // Traverse the array and make bindings:
+            //  Selector UI > [Bind2DOM] > Obs > [Chain] > Comp > [Bind2DOM] > Display UI
+            panels.forEach(panel => {
+                bind2DOM(selectors[panel], entries[panel]);
+                bind2DOM(displays[panel], results[panel]);
+            })
+        });
+    </script>
+</head>
+
+<body>
+    <button class="ui button">
+        Follow Me ;)
+    </button><br><br>
+    <button class="ui primary button">
+        Save
+    </button>
+    <button class="ui button">
+        Discard
+    </button><br><br>
+    <div class="ui three column grid">
+        <div class="column">
+            <div class="ui segment">
+                <img class="right floated mini ui image" src="https://firebasestorage.googleapis.com/v0/b/shiva-923e9.appspot.com/o/NBS%2FFIRESNAP.png?alt=media">
+                <div class="description">
+                    Elliot requested permission to view your contact details.
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="ui segment">
+                <h1 id="bound_heading">Oh-Kay</h1>
+                <input id="bound_input" value="Hello">
+                <select class="input" id="RPS">
+                    <option value="Rock" selected>Rock</option>
+                    <option value="Paper">Paper</option>
+                    <option value="Scissors">Scissors</option>
+                </select>
+                <input class="output" id="success" value="You win!" disabled>
+                <img>
+        </div>
+        </div>
+        <div class="column">
+            <div class="ui segment">
+                <h1 id="bound_heading">Oh-Kay</h1>
+                <input id="bound_input" value="Hello">
+                <select class="input" id="RPS">
+                    <option value="Rock" selected>Rock</option>
+                    <option value="Paper">Paper</option>
+                    <option value="Scissors">Scissors</option>
+                </select>
+                <input class="output" id="success" value="You win!" disabled>
+                <img>
+            </div>
+        </div>
+    </div>
+</body>
