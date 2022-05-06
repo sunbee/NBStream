@@ -1,6 +1,5 @@
 import asyncio
 from time import time
-from aem import con
 import streamlit.components.v1 as components
 import streamlit as st
 from jinja2 import Environment, FileSystemLoader
