@@ -18,6 +18,7 @@ def AirCRUD_IDs(filterByFormula=None, fields=None):
     from the question bank that match optional filter criteria.  
     The filter formula must be url-encoded and AirTable-supported. 
     TODO: Amend to use offset for table with over 100 records.
+    Args: Ref. AirTable API docs and [formula](https://support.airtable.com/hc/en-us/articles/203255215-Formula-Field-Reference).
     """
     headers = {"Authorization": f"Bearer {AIR_KEY}"}
     params = {}
@@ -36,15 +37,17 @@ def AirCRUD_IDs(filterByFormula=None, fields=None):
 
 def AirCRUD_QnA(record_IDs):
     """
-    Retrieve records upto a specified maximum no. from the question bank
-    with optional filter criteria. Retrieve all or selected fields. 
-    The filter formula must be url-encoded and AirTable-supported. 
+    Retrieve records from AirTable backend with a list of IDs.
+    Args:
+    - record_IDs is a list of AirTable record IDs
+    Return:
+    - A list of dicts., each dict bearing a single database record
     """
     headers = {"Authorization": f"Bearer {AIR_KEY}"}
 
     records = []
     for record_ID in record_IDs:
-        endpoint = QnA + '/' + record_ID
+        endpoint = QnA + record_ID
         r = httpx.get(url=endpoint, headers=headers)
         print(r.url)
         r.raise_for_status()
@@ -62,6 +65,10 @@ async def AirCRUD_QnAx(record_IDs):
     1. The worker with httpx async client (this function)
     2. The wrapper with asyncio gather
     3. The event loop from asyncio
+    Args:
+    - record_IDs is a list of DB (AirTable) IDs
+    Return:
+    - A list of dicts, each dict bearing a record from DB
 
     """
     headers = {"Authorization": f"Bearer {AIR_KEY}"}
@@ -69,7 +76,7 @@ async def AirCRUD_QnAx(record_IDs):
     records = []
     async with httpx.AsyncClient() as client:
         for record_ID in record_IDs:
-            endpoint = QnA + '/' + record_ID       
+            endpoint = QnA + record_ID       
             r = await client.get(url=endpoint, headers=headers)
             print(f"URL as {r.url}")
             r.raise_for_status()
@@ -83,8 +90,13 @@ async def fetch_QnA(out, idx=0):
     Note that the worker returns a value and gather 
     is the appropriate method from asyncio to use
     in that case. However, the wrapper must have a 
-    container in outside scope to stash data instead
-    of a return.
+    container in outside scope to stash data in instead
+    of returning a value.
+    Args:
+    - out is a dict with a key named 'res' to hold the query result
+    - idx is an int specifying the start index in a range to query from
+    Return:
+    - Records stashed as a list with key 'res' in dict 'out'. 
     """
     IDs = DB_IDs[idx:idx+3]
     contents = await asyncio.gather(AirCRUD_QnAx(IDs), return_exceptions=True)
