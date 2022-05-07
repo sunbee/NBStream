@@ -102,28 +102,30 @@ async def fetch_QnA(out, idx=0):
     contents = await asyncio.gather(AirCRUD_QnAx(IDs), return_exceptions=True)
     out["res"] = contents[0]
     
+def reframe_question(qna_body):
+    """
+    Convert from dict returned by query to dict for HTML template for presentation.
+    This allows plugging-in the data got from DB to template.
+    Args:
+    - qna_body is a dict representing one mad-lib, structured per DB schema.
+    Return:
+    - A dict structured in line with the HTML template
+    """
+    expected = qna_body.get("answer")[0]
+    pre_lib, _, post_lib = qna_body.get("question").partition("___")
+    explanation = qna_body.get("explanation")
+
+    item = {}
+    item["expected"] = expected
+    item["pre_lib"] = pre_lib
+    item["post_lib"] = post_lib
+    item["explanation"] = explanation
+
+    return item
+
 # Title the page
 st.title("NBS Quiz")
 st.header("Narada Bhakti Sutra")
-
-"""
-This part uses regular IO to fetch contents.
-"""
-st.subheader("Synchronus IO")
-DB_IDs = AirCRUD_IDs() # Get IDs of all records in QuestionBank
-st.write(DB_IDs)
-start = time()
-st.write(AirCRUD_QnA(DB_IDs[0:3]))
-print("IO in regular mode took {:.2f} secs.".format(time()-start))
-"""
-This part uses async IO to fetch contents.
-"""
-out = {'res': None}
-st.subheader("Asynchronus IO")
-start = time()
-asyncio.run(fetch_QnA(out))
-st.write(out)
-print("IO in async mode took {:.2f} secs.".format(time()-start))
 
 """
 A basic call to AirTable API with httpx.
@@ -140,37 +142,25 @@ params["maxRecords"] = 10
 res = httpx.get(url=QnA, headers=headers, params=params)
 qna_ID = [item.get("id") for item in res.json().get("records")]
 qna_body = res.json().get("records")[0].get("fields")
-
-def reframe_question(qna_body):
-    expected = qna_body.get("answer")[0]
-    pre_lib, _, post_lib = qna_body.get("question").partition("___")
-    explanation = qna_body.get("explanation")
-
-    item = {}
-    item["expected"] = expected
-    item["pre_lib"] = pre_lib
-    item["post_lib"] = post_lib
-    item["explanation"] = explanation
-
-    return item
-
 qna_flesh = reframe_question(qna_body=qna_body)
 
-env = Environment(loader=FileSystemLoader(os.path.join(os.getcwd(), "templates")))
-qna_template = env.get_template('qna.html')
-web_page = qna_template.render(quiz=[reframe_question(qna["fields"]) for qna in out["res"]])
+# Write JSON returned by API endpoint
+st.subheader("AirTable API: Endpoint, AirTable IDs and Deserialized JSON")
+st.text(res.url)
+st.write(qna_ID)
+st.write(res.json().get("records")[0])
 
-st.text_area(web_page)
-
+# Execute Q&A in Pure Streamlit
+st.subheader("Q&A in Pure Streamlit")
 c = st.container()
-
 with c:
-    st.markdown(qna_body.get("question"))
-
+    st.markdown(qna_body.get("question"))  
     col_left, col_right = c.columns([1,6])
-    col_left.markdown("##")
-    col_left.markdown("Response: ")
-    response_raw = col_right.text_input(label="").lower()
+    with col_left:
+        st.markdown("##")
+        st.markdown("Response: ")
+    with col_right:
+        response_raw = st.text_input(label="").lower()
     response_pro = response_raw.split(",")
     ans = qna_body.get("answer")
     result = "Correct!" if response_pro == qna_body.get("answer") else "Nope!"
@@ -179,11 +169,39 @@ with c:
             st.markdown(qna_body.get("explanation"))
             st.image(qna_body.get("url (from Snaps)"))
 
-# Write JSON returned by API endpoint
-st.subheader("AirTable")
-st.text(res.url)
-st.write(qna_ID)
-st.write(res.json().get("records")[0])
+"""
+This part gets DB IDs (upto max limit imposed by AirTable API unless offset used)
+"""
+st.subheader("Async AirTable: What's in DB?")
+DB_IDs = AirCRUD_IDs() # Get IDs of all records in QuestionBank
+st.write(DB_IDs)
+
+"""
+This part uses regular IO to fetch contents.
+"""
+st.subheader("Synchronus IO:")
+start = time()
+st.write(AirCRUD_QnA(DB_IDs[0:3]))
+print("IO in regular mode took {:.2f} secs.".format(time()-start))
+
+"""
+This part uses async IO to fetch contents.
+"""
+st.subheader("Asynchronus IO:")
+out = {'res': None}
+start = time()
+asyncio.run(fetch_QnA(out))
+st.write(out)
+print("IO in async mode took {:.2f} secs.".format(time()-start))
+
+"""
+Plug-in the Q&A items 
+"""
+st.subheader("Templated Data")
+env = Environment(loader=FileSystemLoader(os.path.join(os.getcwd(), "templates")))
+qna_template = env.get_template('qna.html')
+web_page = qna_template.render(quiz=[reframe_question(qna["fields"]) for qna in out["res"]])
+st.text_area(web_page, height=10)
 
 # Write HTML with CSS
 Rest = st.checkbox("REST?")
