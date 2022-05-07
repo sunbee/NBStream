@@ -12,6 +12,9 @@ AIR_KEY = os.getenv('AIR')
 QnA = os.getenv('baseURL_QnA')
 Snaps = os.getenv('base_Snaps')
 
+if 'idx' not in st.session_state:
+    st.session_state["idx"] = 0
+
 def AirCRUD_IDs(filterByFormula=None, fields=None):
     """
     Retrieve only IDs upto a specified maximum no. for records 
@@ -146,21 +149,46 @@ print("IO in regular mode took {:.2f} secs.".format(time()-start))
 This part uses async IO to fetch contents.
 """
 st.subheader("Asynchronus IO:")
+idx = st.session_state["idx"]
 out = {'res': None}
 start = time()
-asyncio.run(fetch_QnA(out))
+asyncio.run(fetch_QnA(out, idx=idx))
 st.write(out)
 print("IO in async mode took {:.2f} secs.".format(time()-start))
 
 """
+Manage slideshow
+"""
+number_items = len(DB_IDs)
+start_no_further_than = number_items-3
+def rrwnd():
+    st.session_state["idx"] = 0
+def rwnd():
+    if st.session_state["idx"] > 0:
+        st.session_state["idx"] -= 1
+        print("Decremented your session index to {}".format(st.session_state["idx"]))
+def fwd():
+    if st.session_state["idx"] < start_no_further_than:
+        st.session_state["idx"] += 1
+        print("Incremented your session index to {}".format(st.session_state["idx"]))
+def ffwd():
+    st.session_state["idx"] = start_no_further_than
+
+with st.container():
+    console = st.columns([1,1,7,1,1])
+    with console[0]:
+        st.button(label="<<", on_click=rrwnd)
+    with console[1]:
+        st.button(label="<", on_click=rwnd)
+    with console[3]:
+        st.button(label=">", on_click=fwd)
+    with console[4]:
+        st.button(label=">>", on_click=ffwd)
+
+"""
 Plug-in the Q&A items 
 """
-st.subheader("Templated Data")
 env = Environment(loader=FileSystemLoader(os.path.join(os.getcwd(), "templates")))
 qna_template = env.get_template('qna.html')
 web_page = qna_template.render(quiz=[reframe_question(qna["fields"]) for qna in out["res"]])
-st.text_area(web_page, height=10)
-
-# Write HTML with CSS
-st.subheader("REST HTML")
 components.html(web_page, height=900)
