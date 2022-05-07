@@ -12,6 +12,19 @@ AIR_KEY = os.getenv('AIR')
 QnA = os.getenv('baseURL_QnA')
 Snaps = os.getenv('base_Snaps')
 
+"""
+Running Slideshow:
+We display 3 slides at one time. To advance the slide-deck, 
+we need to stash away the index of the start slide and
+increment or decrement to forward or rewind the deck. 
+But the entire code is run when any widget changes state, 
+so the variable where the index is stored will be reset.
+How to persist a variable in a way beyond the refresh?
+For this, we use session state.
+**Session state gives us a way to persist information 
+across page-refreshes and the information is then tied
+to a client session.**
+"""
 if 'idx' not in st.session_state:
     st.session_state["idx"] = 0
 
@@ -160,7 +173,7 @@ print("IO in async mode took {:.2f} secs.".format(time()-start))
 Manage slideshow
 """
 number_items = len(DB_IDs)
-start_no_further_than = number_items-3
+start_no_further_than = number_items - 3
 def rrwnd():
     st.session_state["idx"] = 0
 def rwnd():
