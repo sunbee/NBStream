@@ -128,48 +128,6 @@ st.title("NBS Quiz")
 st.header("Narada Bhakti Sutra")
 
 """
-A basic call to AirTable API with httpx.
-This snippet of code illustrates the mechanism
-by which an authenticated request is made
-to query the database and retrieve contents.
-The query can be parameterized with search criteria
-including filter conditions and to narrow down
-search results to fields of interest.
-"""
-headers = {"Authorization": f"Bearer {AIR_KEY}"}
-params = {}
-params["maxRecords"] = 10
-res = httpx.get(url=QnA, headers=headers, params=params)
-qna_ID = [item.get("id") for item in res.json().get("records")]
-qna_body = res.json().get("records")[0].get("fields")
-qna_flesh = reframe_question(qna_body=qna_body)
-
-# Write JSON returned by API endpoint
-st.subheader("AirTable API: Endpoint, AirTable IDs and Deserialized JSON")
-st.text(res.url)
-st.write(qna_ID)
-st.write(res.json().get("records")[0])
-
-# Execute Q&A in Pure Streamlit
-st.subheader("Q&A in Pure Streamlit")
-c = st.container()
-with c:
-    st.markdown(qna_body.get("question"))  
-    col_left, col_right = c.columns([1,6])
-    with col_left:
-        st.markdown("##")
-        st.markdown("Response: ")
-    with col_right:
-        response_raw = st.text_input(label="").lower()
-    response_pro = response_raw.split(",")
-    ans = qna_body.get("answer")
-    result = "Correct!" if response_pro == qna_body.get("answer") else "Nope!"
-    if response_raw:
-        with st.expander(result + " See explanation."):
-            st.markdown(qna_body.get("explanation"))
-            st.image(qna_body.get("url (from Snaps)"))
-
-"""
 This part gets DB IDs (upto max limit imposed by AirTable API unless offset used)
 """
 st.subheader("Async AirTable: What's in DB?")
@@ -204,18 +162,5 @@ web_page = qna_template.render(quiz=[reframe_question(qna["fields"]) for qna in 
 st.text_area(web_page, height=10)
 
 # Write HTML with CSS
-Rest = st.checkbox("REST?")
-if Rest:
-    st.subheader("REST HTML")
-    components.html(web_page, height=900)
-else:
-    # Write HTML with CSS
-    st.subheader("Static HTML")
-    with open('sui_button_qna.html') as f:
-        data = f.read()
-        components.html(data, height=900)
-
-st.subheader("Static HTML2")
-with open('sui_button.html') as f:
-    data = f.read()
-    components.html(data, height=240)
+st.subheader("REST HTML")
+components.html(web_page, height=900)
