@@ -43,7 +43,7 @@
 
         class Computed extends Observable {
             constructor (computer, dependents) {
-                super(computer("Rock"));  // Initialize computed value 
+                super(computer());  // Initialize computed value 
                                     // by call to constructor of Observable class
                 const listener = (_) => {
                 /*
@@ -56,7 +56,7 @@
                 state and notifies subscribers.  
                 */
                 console.log('Listener in Computed got ' + _);
-                this._value = computer(_);
+                this._value = computer();
                 console.log('Computer in Computed got ' + this._value);
                 this.notify();  // Notify listeners of 'this' instance 
                                 // of Computed class

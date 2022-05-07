@@ -84,7 +84,7 @@ async def AirCRUD_QnAx(record_IDs):
 
     return records
 
-async def fetch_QnA(out, idx=0):
+async def fetch_QnA(out, idx=0, num=3):
     """
     Wrap around the async worker with asyncio gather.
     Note that the worker returns a value and gather 
@@ -98,7 +98,7 @@ async def fetch_QnA(out, idx=0):
     Return:
     - Records stashed as a list with key 'res' in dict 'out'. 
     """
-    IDs = DB_IDs[idx:idx+3]
+    IDs = DB_IDs[idx:idx+num]
     contents = await asyncio.gather(AirCRUD_QnAx(IDs), return_exceptions=True)
     out["res"] = contents[0]
     
