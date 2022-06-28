@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Computer got observed as " + entry.value);
             console.log("Computer got explanation as " + explanation.value)
 
-            document.getElementById("Explanation").innerHTML = explanation.value;
+            document.getElementById("Content").innerHTML = explanation.value;
             return (entry.value == target.value) ? "You nailed it!" : "Naaah, try again!"};
         return out
     } 
