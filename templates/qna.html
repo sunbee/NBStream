@@ -3,10 +3,10 @@
 {% for item in quiz %}
 <div class="column">
     <div class="ui segment">
-        <div id="Quiz">
+        <div class="Quiz">
             <h3>Narada Bhakti Sutra</h3>
             <div>
-                <div class="tenor-gif-embed" data-postid="16987460" data-share-method="host" data-width="100%" data-aspect-ratio="1.7785714285714287"><a href="https://tenor.com/view/ithink-im-definitely-up-for-the-job-sander-bos-making-the-cut-qualified-ican-do-it-gif-16987460">I Think Im Definitely Up For The Job</a> from <a href="https://tenor.com/search/ithinkimdefinitelyupforthejob-gifs">Ithinkimdefinitelyupforthejob GIFs</a></div><script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+                <img src={{ item.snapURL }} width=100%>
             </div>
             <div class="Expected" id="Expected" data-answer="{{ item.expected }}"></div>
             <p>{{ item.pre_lib }}

@@ -112,7 +112,7 @@ async def fetch_QnA(out, idx=0, num=3):
     - out is a dict with a key named 'res' to hold the query result
     - idx is an int specifying the start index in a range to query from
     Return:
-    - Records stashed as a list with key 'res' in dict 'out'. 
+    - Records stashed in a list under key 'res' in dict 'out'. 
     """
     IDs = DB_IDs[idx:idx+num]
     contents = await asyncio.gather(AirCRUD_QnAx(IDs), return_exceptions=True)
@@ -130,12 +130,14 @@ def reframe_question(qna_body):
     expected = qna_body.get("answer")[0]
     pre_lib, _, post_lib = qna_body.get("question").partition("___")
     explanation = qna_body.get("explanation")
+    snapURL = qna_body.get("url (from Snaps)")[0]
 
     item = {}
     item["expected"] = expected
     item["pre_lib"] = pre_lib
     item["post_lib"] = post_lib
     item["explanation"] = explanation
+    item["snapURL"] = snapURL
 
     return item
 
