@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>My Semantic UI Button</title>
+    <title>My Slick Carousel</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/sunbee/sunbee.github.io/Ashtavakra/slick.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/sunbee/sunbee.github.io/Ashtavakra/slick-theme.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/sunbee/sunbee.github.io/Ashtavakra/flip.css"/>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/sunbee/sunbee.github.io/Ashtavakra/gamify.js"></script>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
     <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <!--
     <script>
         hide = () => {
             document.getElementById('Content') .style.display='none'
@@ -157,26 +164,34 @@
                 bind2DOM(displays[panel], results[panel]);
             })
         });
-    </script>
+    </script>   
+    -->
 </head>
 
 <body>
-    <div class="ui three column grid">
+    <div class="classy">
         {% block quizzes %}{% endblock %}
     </div>
+    <div id="Content"><p>Explanation</p></div>
     <br>
-    <button class="ui secondary button" onclick="show()">
-        Show
-    </button>
-    <button class="ui button" onclick="hide()">
-        Hide
-    </button>
-    <div class="ui piled segment" id="Content">
-        <h4 class="ui header">Elaboration</h4>
-        <div id="Explanation">
-            <p>King Janaka had a dream in which his kingdom was beset by natural disaster. He was scavenging for scraps of food and found a piece of roti. </p>
-            <p>The custom at the time was that a householder would not sit down to eat in the presence of a hungry person until that person was first fed. Fearful of losing his sole scrap of food, Janaka hid the roti under his clothes and sought a lonely and desolate place to sit down and eat. Even then, an eagle swooped down upon him and snatched the roti just as he was about to eat. Desperate, he cried out loud in his dream and woke up to find himself in his royal court, surrounded by courtiers.</p>
-            <p>Being a thoughtful person, Janaka wondered whether he had woken up from a frightening dream into pleasant reality or escaped from harsh reality into a pleasant dream. HIs questioning nature led him to seek answers from wise men and women in his kingdom, ultimately leading him to Ashtavakra, the brahmipurush, who had attained...</p>    
-        </div>
-    </div>
+    <!--
+        Use the jsdelivr.net CDN service to deliver files (JS/CSS) hosted on github.
+        Append the URL htttps://cdn.jsdelivr.net/gh to the github uid and repo with path to file,
+        like so: https://cdn.jsdelivr.net/gh/{uid}/{repo}/path/to/file.js on main branch.
+        Avoid having code (JS/CSS) and resources as files on disk in project folder. 
+    -->
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/sunbee/sunbee.github.io/Ashtavakra/slick.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.classy').slick({
+                infinite: true,
+                slidesToShow: 3,
+                slidesToScroll: 2
+            });
+        });
+    </script>
 </body>
+</html>

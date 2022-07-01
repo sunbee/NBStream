@@ -8,9 +8,10 @@ Proceed in steps as follows:
 
 - **rev001**: Add feature to advance the slide-deck.
 - **rev002**: Build an example in Slick Carousel for future use. Use snaps from DB instead of hard-coded gif image.
-- **rev003**: 
+- **rev003**: Incorporated Slick Carousel into Streamlit app. 
 
 Our approach is taking us down a path of using Streamlit for IO and Vanilla JS-powered HTML page responsive UX.
 The NBS REST API will use Jinja templates to serve an HTML page with stylesheets and JS that we will render in Streamlit.
 Streamlit allows rapid prototyping. We want a Single Page App (SPA) in VanillaJS (i.e HTML + CSS + JS). That means implementing CRUD operations to REST API endpoints in Javascript, e.g. using 'fetch()'. We have stylesheets in folder labeled css, JS code in folder labeled JS and HTML in folder labeled templates. The Carousel example in rev002 provides a demonstration based on which we shall flesh out our app as SPA in VanillaJS. 
 The basic idea is that the root path of the backend shall return the main page of application. This main page shall have the stylesheets and code delivered via CDN route. The folder for css shall have stylesheets for slick, flip-cards, etc. The folder for JS shall have classes for CRUD, responsive UX, etc. The backend may be Airtable to start and migrated to the FastAPI app when that is complete.
+

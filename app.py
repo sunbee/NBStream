@@ -1,10 +1,12 @@
 import asyncio
+from email.mime import base
 from time import time
 import streamlit.components.v1 as components
 import streamlit as st
 from jinja2 import Environment, FileSystemLoader
 import httpx
 import os
+import base64
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -207,3 +209,5 @@ env = Environment(loader=FileSystemLoader(os.path.join(os.getcwd(), "templates")
 qna_template = env.get_template('qna.html')
 web_page = qna_template.render(quiz=[reframe_question(qna["fields"]) for qna in out["res"]])
 components.html(web_page, height=900)
+
+

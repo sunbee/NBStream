@@ -1,24 +1,32 @@
 {% extends "base_qna.html" %}
 {% block quizzes %}
 {% for item in quiz %}
-<div class="column">
-    <div class="ui segment">
-        <div class="Quiz">
-            <h3>Narada Bhakti Sutra</h3>
-            <div>
-                <img src={{ item.snapURL }} width=100%>
+<div class="flip-card">
+    <div class="flip-card-inner">
+        <div class="flip-card-front">
+            <img src={{ item.snapURL }} width=100%>
+        </div>
+        <div class="flip-card-back">
+            <div class="Quiz">
+                <h3>Narada Bhakti Sutra</h3>
+                <div class="Expected" id="Expected" data-answer="{{ item.expected }}"></div>
+                <p>{{ item.pre_lib }}
+                    <input type="text" class="Response"> 
+                    {{ item.post_lib }}</p>
+                <p>Assessment: 
+                        <input type="text" class="Passfail" disabled>
+                </p>
+                <div class="Elaboration" style="display: none">
+                    <p>{{ item.explanation }}</p>
+                </div>      
+                <button class="ui secondary button" onclick="show()">
+                    Show
+                </button>
+                <button class="ui button" onclick="hide()">
+                    Hide
+                </button><br>
             </div>
-            <div class="Expected" id="Expected" data-answer="{{ item.expected }}"></div>
-            <p>{{ item.pre_lib }}
-                <input type="text" class="Response"> 
-                {{ item.post_lib }}</p>
-            <p>Assessment: 
-            <input type="text" class="Passfail" disabled>
-            </p>
-            <div class="Elaboration" style="display: none">
-                <p>{{ item.explanation }}</p>
-            </div>              
-        </div>                
+        </div>
     </div>
 </div>
 {% endfor %}
