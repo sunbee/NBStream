@@ -15,6 +15,13 @@ QnA = os.getenv('baseURL_QnA')
 Snaps = os.getenv('base_Snaps')
 
 """
+This is how many slides are downloaded at a time to render in gallery.
+The number of slides show at a time (typically 3) must be less than 
+or equal to this number.
+"""
+SIZE_OF_GALLERY = 5  
+
+"""
 Running Slideshow:
 We display 3 slides at one time. To advance the slide-deck, 
 we need to stash away the index of the start slide and
@@ -102,7 +109,7 @@ async def AirCRUD_QnAx(record_IDs):
 
     return records
 
-async def fetch_QnA(out, idx=0, num=3):
+async def fetch_QnA(out, idx=0, num=SIZE_OF_GALLERY):
     """
     Wrap around the async worker with asyncio gather.
     Note that the worker returns a value and gather 
@@ -159,7 +166,7 @@ This part uses regular IO to fetch contents.
 """
 st.subheader("Synchronus IO:")
 start = time()
-st.write(AirCRUD_QnA(DB_IDs[0:3]))
+st.write(AirCRUD_QnA(DB_IDs[0:SIZE_OF_GALLERY]))
 print("IO in regular mode took {:.2f} secs.".format(time()-start))
 
 """
@@ -177,7 +184,7 @@ print("IO in async mode took {:.2f} secs.".format(time()-start))
 Manage slideshow
 """
 number_items = len(DB_IDs)
-start_no_further_than = number_items - 3
+start_no_further_than = number_items - 5
 def rrwnd():
     st.session_state["idx"] = 0
 def rwnd():
