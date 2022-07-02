@@ -1,7 +1,19 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
 }
-  
+
+.classy-wrapper {
+    width: 100%;
+    padding: 25px;
+    text-align: center;
+    background-color: #EFC7B7;
+}
+
+.classy {
+    width: 90%;
+    margin: 0px auto;
+}
+
 .flip-card {
     background-color: transparent;
     width: 300px;

@@ -215,6 +215,6 @@ Plug-in the Q&A items
 env = Environment(loader=FileSystemLoader(os.path.join(os.getcwd(), "templates")))
 qna_template = env.get_template('qna.html')
 web_page = qna_template.render(quiz=[reframe_question(qna["fields"]) for qna in out["res"]])
-components.html(web_page, height=900)
+components.html(web_page, width=960,height=450)
 
 
